@@ -14,7 +14,7 @@ import com.devdiyora.library.service.BookCopyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.devdiyora.library.dto.request.UpdateBookCopyStatusRequest;
 import java.util.List;
 
 @Service
@@ -121,6 +121,38 @@ public class BookCopyServiceImpl implements BookCopyService {
 
         bookCopyRepository.delete(bookCopy);
     }
+
+    @Override
+    @Transactional
+    public BookCopyResponse updateBookCopyStatus(Long id,
+                                                 UpdateBookCopyStatusRequest request) {
+
+        BookCopy bookCopy = bookCopyRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Book copy not found."));
+
+        BookCopyStatus currentStatus = bookCopy.getStatus();
+        BookCopyStatus newStatus = request.getStatus();
+
+        if (currentStatus == BookCopyStatus.BORROWED) {
+            throw new BusinessException(
+                    "Cannot change status of a copy that is currently borrowed. Return it first."
+            );
+        }
+
+        if (newStatus == BookCopyStatus.BORROWED) {
+            throw new BusinessException(
+                    "A copy can only be marked as BORROWED through the borrow transaction flow."
+            );
+        }
+
+        bookCopy.setStatus(newStatus);
+
+        BookCopy updatedBookCopy = bookCopyRepository.save(bookCopy);
+
+        return mapToResponse(updatedBookCopy);
+    }
+
     private BookCopyResponse mapToResponse(BookCopy bookCopy) {
 
         return new BookCopyResponse(

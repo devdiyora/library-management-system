@@ -175,7 +175,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         User currentUser = currentUserProvider.getCurrentUser();
 
-        if (!currentUser.hasRole("ADMIN")) {
+        if (!currentUser.hasRole("ADMIN") && !currentUser.hasRole("LIBRARIAN")) {
 
             if (!reservation.getMember().getId().equals(currentUser.getId())) {
                 throw new BusinessException(

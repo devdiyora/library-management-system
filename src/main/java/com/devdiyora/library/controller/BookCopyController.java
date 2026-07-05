@@ -1,6 +1,7 @@
 package com.devdiyora.library.controller;
 
 import com.devdiyora.library.dto.request.BookCopyRequest;
+import com.devdiyora.library.dto.request.UpdateBookCopyStatusRequest;
 import com.devdiyora.library.dto.response.BookCopyResponse;
 import com.devdiyora.library.service.BookCopyService;
 import jakarta.validation.Valid;
@@ -78,5 +79,16 @@ public class BookCopyController {
         bookCopyService.deleteBookCopy(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','LIBRARIAN')")
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<BookCopyResponse> updateBookCopyStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateBookCopyStatusRequest request) {
+
+        return ResponseEntity.ok(
+                bookCopyService.updateBookCopyStatus(id, request)
+        );
     }
 }

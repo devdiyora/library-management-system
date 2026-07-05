@@ -51,7 +51,7 @@ public class ReservationController {
         );
     }
 
-    @PreAuthorize("hasAnyRole('MEMBER','ADMIN')")
+    @PreAuthorize("hasAnyRole('MEMBER','ADMIN','LIBRARIAN')")
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<ReservationResponse>
     cancelReservation(
