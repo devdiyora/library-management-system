@@ -6,6 +6,7 @@ import com.devdiyora.library.enums.RoleType;
 import com.devdiyora.library.repository.RoleRepository;
 import com.devdiyora.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,10 +21,16 @@ public class AdminDataLoader implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${admin.default.email}")
+    private String adminEmail;
+
+    @Value("${admin.default.password}")
+    private String adminPassword;
+
     @Override
     public void run(String... args) {
 
-        if (userRepository.findByEmail("admin@gmail.com").isPresent()) {
+        if (userRepository.findByEmail(adminEmail).isPresent()) {
             return;
         }
 
@@ -35,8 +42,8 @@ public class AdminDataLoader implements CommandLineRunner {
 
         admin.setFirstName("System");
         admin.setLastName("Administrator");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword(passwordEncoder.encode("admin123"));
+        admin.setEmail(adminEmail);
+        admin.setPassword(passwordEncoder.encode(adminPassword));
         admin.setPhoneNumber("9999999999");
         admin.setEnabled(true);
 
